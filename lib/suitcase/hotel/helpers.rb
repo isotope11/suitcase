@@ -83,8 +83,14 @@ module Suitcase
       # uri - The URI to parse the JSON from.
       #
       # Returns the parsed JSON.
-      def parse_response(uri)
-        response = Net::HTTP.get_response(uri)
+      def parse_response(uri, params = {}, info = {})
+        if info[:large_query]
+          params["apiKey"] = Suitcase::Configuration.hotel_api_key
+          params["cid"] = (Suitcase::Configuration.hotel_cid.to_s ||= '55505')
+          response = Net::HTTP.post_form(uri, params)
+        else
+          response = Net::HTTP.get_response(uri)
+        end
 
         if response.code.to_i == 403
           if response.body.include?("Forbidden")
@@ -115,8 +121,8 @@ module Suitcase
 
           raise e
         end
-
-        JSON.parse(Net::HTTP.get_response(uri).body)
+        
+        JSON.parse(response.body)
       end
 
       # Internal: Raise the errors returned from the response.

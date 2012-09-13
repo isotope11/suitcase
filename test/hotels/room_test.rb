@@ -36,7 +36,7 @@ describe Suitcase::Hotel::Room do
       @room.rooms = [{}]
       @room.rooms[0][:adults] = 1
       @room.rooms[0][:children_ages] = [5, 3]
-      # @room.rooms[0][:bed_type] = @room.bed_types[0]
+      @room.rooms[0][:bed_type] = @room.bed_types[0]
       @room.rooms[0][:smoking_preference] = "NS"
     end
 

@@ -173,8 +173,13 @@ module Suitcase
       if Configuration.cache? and Configuration.cache.cached?(:list, params)
         parsed = Configuration.cache.get_query(:list, params)
       else
-        url = url(method: "list", params: params, session: info[:session])
-        parsed = parse_response(url)
+        # Handle large queries as post request
+        if info[:large_query]
+          url = url(as_form: true, method: "list", params: params, session: info[:session])
+        else
+          url = url(method: "list", params: params, session: info[:session])
+        end
+        parsed = parse_response(url, params, info)
         handle_errors(parsed)
         if Configuration.cache?
           Configuration.cache.save_query(:list, params, parsed)
